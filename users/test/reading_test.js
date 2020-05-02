@@ -3,11 +3,16 @@ const User = require('../src/user');
 
 
 describe('Reading users out of the data base', () => {
-
+     let mary, ting, sheng, zest, mew;
 
     beforeEach((done) => {
         mary = new User({ name: 'Mary' });
-        mary.save()
+        ting = new User({ name: 'Ting'});
+        sheng = new User({ name: 'Sheng'});
+        zest = new User({ name: 'Zest'});
+        mew = new User({ name: 'Mew'});
+
+        Promise.all([ mary.save(), ting.save(), sheng.save(), zest.save(), mew.save()])
           .then(() => done() );
     })
     
@@ -24,6 +29,16 @@ describe('Reading users out of the data base', () => {
           assert(user.name === 'Mary');
           done();
         });
+    });
+
+    it('can skip and limit the result set', (done) => {
+      User.find({}).sort({ name: 1 }).skip(1).limit(2)
+       .then((users) => {
+         assert(users.length === 2);
+         assert(users[0].name === 'Ting');
+         assert(users[1].name === 'Sheng');
+         done();
+       });
     });
 });
 
